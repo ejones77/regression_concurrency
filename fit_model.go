@@ -4,11 +4,10 @@ import (
 	"log"
 	"sync"
 
-	"github.com/go-gota/gota/dataframe"
 	"gonum.org/v1/gonum/stat"
 )
 
-func FitModel(df dataframe.DataFrame, cols []string) ([]float64, error) {
+func FitModel(df DF, cols []string) ([]float64, error) {
 	if len(cols) == 1 {
 		// Perform simple linear regression
 		target := df.Col("mv").Float()
@@ -21,7 +20,7 @@ func FitModel(df dataframe.DataFrame, cols []string) ([]float64, error) {
 	}
 }
 
-func FitSequential(df dataframe.DataFrame, allModels [][]string, trainDf DF, testDf DF) {
+func FitSequential(df DF, allModels [][]string, trainDf DF, testDf DF) {
 	regressions := make([]RegressionResult, len(allModels))
 	for i, model := range allModels {
 		coefficients, err := FitModel(trainDf, model)
@@ -34,7 +33,7 @@ func FitSequential(df dataframe.DataFrame, allModels [][]string, trainDf DF, tes
 	processResults(regressions, allModels, testDf, "outputs/output-sequential.txt")
 }
 
-func FitConcurrent(df dataframe.DataFrame, allModels [][]string, trainDf DF, testDf DF) {
+func FitConcurrent(df DF, allModels [][]string, trainDf DF, testDf DF) {
 	results := make([]RegressionResult, len(allModels))
 	// helps ensure the goroutines are done before trying to compute results
 	var wg sync.WaitGroup
