@@ -11,6 +11,7 @@ This repository performs simple and multiple linear regression on all feature co
 
 To run these tests locally:
 - Clone the repository
+- Add the `boston.csv` file to a directory `given_files`
 - From within the repo's directory, run `go build .`
 - Then run `./regression_concurrency.exe`
 
