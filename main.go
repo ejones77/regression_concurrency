@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"math/rand"
 	"os"
 	"time"
 
@@ -11,22 +10,6 @@ import (
 )
 
 type DF = dataframe.DataFrame
-
-func trainTestSplit(df DF, trainSize float64) (DF, DF) {
-	if trainSize < 0 || trainSize > 1 {
-		log.Fatalf("trainSize has to be between 0 and 1")
-	}
-	r := rand.New(rand.NewSource(42))
-	perm := r.Perm(df.Nrow())
-	df = df.Subset(perm)
-
-	trainNum := int(trainSize * float64(df.Nrow()))
-
-	trainDf := df.Subset(perm[:trainNum])
-	testDf := df.Subset(perm[trainNum:])
-
-	return trainDf, testDf
-}
 
 func main() {
 
@@ -49,12 +32,16 @@ func main() {
 	allModels := FindAllFits(newCols)
 
 	start := time.Now()
-	FitSequential(df, allModels, trainDf, testDf)
+	for i := 0; i < 100; i++ {
+		FitSequential(df, allModels, trainDf, testDf)
+	}
 	elapsed := time.Since(start)
 	fmt.Printf("FitSequential took %s\n", elapsed)
 
 	start = time.Now()
-	FitConcurrent(df, allModels, trainDf, testDf)
+	for i := 0; i < 100; i++ {
+		FitConcurrent(df, allModels, trainDf, testDf)
+	}
 	elapsed = time.Since(start)
 	fmt.Printf("FitConcurrent took %s\n", elapsed)
 }
