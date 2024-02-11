@@ -5,10 +5,8 @@ import (
 	"gonum.org/v1/gonum/mat"
 )
 
-// MultipleLinearRegression performs multiple linear regression on the given dataframe.
-// It returns the coefficients of the linear model.
 func MultipleLinearRegression(df dataframe.DataFrame, target string, features []string) ([]float64, error) {
-	// Create a matrix of features
+	// We need to transform the features to a matrix
 	X := mat.NewDense(df.Nrow(), len(features)+1, nil)
 	for i, feature := range features {
 		floats := df.Col(feature).Float()
@@ -17,15 +15,14 @@ func MultipleLinearRegression(df dataframe.DataFrame, target string, features []
 		}
 	}
 
-	// Add a column of ones for the intercept term
+	// Add a column of ones for the intercept
 	for i := 0; i < df.Nrow(); i++ {
 		X.Set(i, len(features), 1)
 	}
 
-	// Create a vector of target values
 	y := mat.NewVecDense(df.Nrow(), df.Col(target).Float())
 
-	// Calculate the coefficients using the normal equation: (X'X)^-1 X'y
+	// using the normal equation (X'X^-1)X'y
 	var XTX, XTy, coef mat.Dense
 	XTX.Mul(X.T(), X)
 	XTy.Mul(X.T(), y)
